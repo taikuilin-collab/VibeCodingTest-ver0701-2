@@ -396,43 +396,53 @@ const EXTRA_EVIDENCE_LIBRARY: Record<string, Evidence> = {
 // Single global/module-level Audio instance to guarantee there is absolutely no overlapping or duplicated BGM
 const getBgmAudio = (): HTMLAudioElement | null => {
   if (typeof window === 'undefined') return null;
-  const win = window as any;
-  if (!win.__globalBgmAudio) {
-    // If there are any stray audio elements from previous hot reloads, pause and clear them
-    if (win.__compiledBgmAudios) {
-      win.__compiledBgmAudios.forEach((aud: any) => {
-        try {
-          aud.pause();
-          aud.src = '';
-        } catch (e) {}
-      });
-      win.__compiledBgmAudios.clear();
-    } else {
-      win.__compiledBgmAudios = new Set();
-    }
+  try {
+    const win = window as any;
+    if (!win.__globalBgmAudio) {
+      // If there are any stray audio elements from previous hot reloads, pause and clear them
+      if (win.__compiledBgmAudios) {
+        win.__compiledBgmAudios.forEach((aud: any) => {
+          try {
+            aud.pause();
+            aud.src = '';
+          } catch (e) {}
+        });
+        win.__compiledBgmAudios.clear();
+      } else {
+        win.__compiledBgmAudios = new Set();
+      }
 
-    const audio = new Audio(`${import.meta.env.BASE_URL}title.mp3`);
-    audio.loop = true;
-    audio.volume = 0.4;
-    win.__globalBgmAudio = audio;
-    win.__compiledBgmAudios.add(audio);
+      const audio = new Audio(`${import.meta.env.BASE_URL}title.mp3`);
+      audio.loop = true;
+      audio.volume = 0.4;
+      win.__globalBgmAudio = audio;
+      win.__compiledBgmAudios.add(audio);
+    }
+    return win.__globalBgmAudio;
+  } catch (err) {
+    console.error("Failed to initialize BGM Audio:", err);
+    return null;
   }
-  return win.__globalBgmAudio;
 };
 
 const getStartSeAudio = (): HTMLAudioElement | null => {
   if (typeof window === 'undefined') return null;
-  const win = window as any;
-  if (!win.__globalStartSeAudio) {
-    const se = new Audio(`${import.meta.env.BASE_URL}gamestart.mp3`);
-    se.loop = true;
-    se.volume = 0.6;
-    win.__globalStartSeAudio = se;
-    if (win.__compiledBgmAudios) {
-      win.__compiledBgmAudios.add(se);
+  try {
+    const win = window as any;
+    if (!win.__globalStartSeAudio) {
+      const se = new Audio(`${import.meta.env.BASE_URL}gamestart.mp3`);
+      se.loop = true;
+      se.volume = 0.6;
+      win.__globalStartSeAudio = se;
+      if (win.__compiledBgmAudios) {
+        win.__compiledBgmAudios.add(se);
+      }
     }
+    return win.__globalStartSeAudio;
+  } catch (err) {
+    console.error("Failed to initialize SE Audio:", err);
+    return null;
   }
-  return win.__globalStartSeAudio;
 };
 
 export default function App() {
@@ -549,6 +559,8 @@ export default function App() {
   }, []);
 
   const fetchScenarios = async () => {
+    console.log("アプリ起動");
+    console.log("事件一覧取得開始");
     const apiURL = resolveApiPath('/api/scenarios');
     console.log(`[fetchScenarios] Attempting to fetch scenarios from API: ${apiURL}`);
     try {
@@ -558,19 +570,29 @@ export default function App() {
       }
       const data = await res.json();
       if (data && data.success && Array.isArray(data.scenarios)) {
+        console.log("事件一覧取得成功", data);
         console.log("[fetchScenarios] API scenarios loaded successfully:", data.scenarios);
         setScenarios(data.scenarios);
         if (data.scenarios.length > 0) {
-          selectScenario(data.scenarios[0], false);
+          try {
+            selectScenario(data.scenarios[0], false);
+          } catch (selectErr) {
+            console.error("Failed to select loaded scenario:", selectErr);
+          }
         }
       } else {
         throw new Error("Invalid scenarios response format from server");
       }
     } catch (e: any) {
+      console.error("事件一覧取得失敗", e);
       console.warn(`[fetchScenarios] API fetch failed, falling back to local PRESET_SCENARIOS. Details:`, e?.message || e);
       setScenarios(PRESET_SCENARIOS);
       if (PRESET_SCENARIOS.length > 0) {
-        selectScenario(PRESET_SCENARIOS[0], false);
+        try {
+          selectScenario(PRESET_SCENARIOS[0], false);
+        } catch (selectErr) {
+          console.error("Failed to select fallback scenario:", selectErr);
+        }
       }
     }
   };
