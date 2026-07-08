@@ -412,7 +412,7 @@ const getBgmAudio = (): HTMLAudioElement | null => {
         win.__compiledBgmAudios = new Set();
       }
 
-      const audio = new Audio(`${import.meta.env.BASE_URL}title.mp3`);
+      const audio = new Audio('./title.mp3');
       audio.loop = true;
       audio.volume = 0.4;
       win.__globalBgmAudio = audio;
@@ -430,7 +430,7 @@ const getStartSeAudio = (): HTMLAudioElement | null => {
   try {
     const win = window as any;
     if (!win.__globalStartSeAudio) {
-      const se = new Audio(`${import.meta.env.BASE_URL}gamestart.mp3`);
+      const se = new Audio('./gamestart.mp3');
       se.loop = true;
       se.volume = 0.6;
       win.__globalStartSeAudio = se;
@@ -1051,7 +1051,7 @@ export default function App() {
             title={!showWelcomePortal ? "事件選択ポータルに戻る" : undefined}
           >
             <img
-              src={`${import.meta.env.BASE_URL}title.png`}
+              src="./title.png"
               referrerPolicy="no-referrer"
               alt="矛盾検知脱出ゲーム"
               className="w-full h-full object-contain mx-auto transition-all duration-300 block"
