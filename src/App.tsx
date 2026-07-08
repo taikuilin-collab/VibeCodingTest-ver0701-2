@@ -561,6 +561,27 @@ export default function App() {
   const fetchScenarios = async () => {
     console.log("アプリ起動");
     console.log("事件一覧取得開始");
+
+    // Detect if we are running in a static/GitHub Pages environment
+    const isGitHubPages = typeof window !== 'undefined' && (
+      window.location.hostname.endsWith('github.io') || 
+      (import.meta.env.BASE_URL && import.meta.env.BASE_URL !== '/')
+    );
+
+    if (isGitHubPages) {
+      console.log("[fetchScenarios] Static environment (GitHub Pages) detected. Loading local PRESET_SCENARIOS directly to prevent network delays or blocking.");
+      setScenarios(PRESET_SCENARIOS);
+      if (PRESET_SCENARIOS.length > 0) {
+        try {
+          selectScenario(PRESET_SCENARIOS[0], false);
+          console.log("[fetchScenarios] Successfully selected fallback scenario:", PRESET_SCENARIOS[0].id);
+        } catch (selectErr) {
+          console.error("Failed to select fallback scenario:", selectErr);
+        }
+      }
+      return;
+    }
+
     const apiURL = resolveApiPath('/api/scenarios');
     console.log(`[fetchScenarios] Attempting to fetch scenarios from API: ${apiURL}`);
     try {
@@ -905,12 +926,27 @@ export default function App() {
     setIsVerifying(true);
     setAccusationResult(null);
 
+    const isCustom = !["mansion_murder", "ark_lockdown", "deep_sea_base"].includes(currentScenario?.id || '');
+
+    // Detect if we are running in a static/GitHub Pages environment to bypass network verification
+    const isStaticEnv = typeof window !== 'undefined' && (
+      window.location.hostname.endsWith('github.io') || 
+      (import.meta.env.BASE_URL && import.meta.env.BASE_URL !== '/')
+    );
+
+    if (isStaticEnv && !isCustom) {
+      console.log("[handleVerifyContradiction] Static environment (GitHub Pages) detected. Executing local verification directly to prevent unneeded POST failures.");
+      const evidenceA = unlockedEvidences.find(e => e.id === selectedEvidenceIds[0]);
+      const evidenceB = unlockedEvidences.find(e => e.id === selectedEvidenceIds[1]);
+      const localResult = runLocalVerification(selectedEvidenceIds[0], selectedEvidenceIds[1], userExplanation, false);
+      processVerificationResult(localResult, evidenceA, evidenceB, false);
+      setIsVerifying(false);
+      return;
+    }
+
     try {
       const evidenceA = unlockedEvidences.find(e => e.id === selectedEvidenceIds[0]);
       const evidenceB = unlockedEvidences.find(e => e.id === selectedEvidenceIds[1]);
-
-      // Check if custom scenario scenario details are needed in request
-      const isCustom = !["mansion_murder", "ark_lockdown", "deep_sea_base"].includes(currentScenario?.id || '');
 
       const apiURL = resolveApiPath('/api/verify-contradiction');
       console.log(`[handleVerifyContradiction] Verifying contradiction at: ${apiURL}`);
@@ -939,10 +975,10 @@ export default function App() {
         alert(data.message || "検証に失敗しました。");
       }
     } catch (e: any) {
-      console.warn("[handleVerifyContradiction] API verification failed or unavailable, switching to local fallback deduction engine. Error details:", e?.message || e);
+      console.error("[handleVerifyContradiction] API verification failed:", e);
+      console.warn("[handleVerifyContradiction] Switching to local fallback deduction engine due to network failure. Error details:", e?.message || e);
       const evidenceA = unlockedEvidences.find(e => e.id === selectedEvidenceIds[0]);
       const evidenceB = unlockedEvidences.find(e => e.id === selectedEvidenceIds[1]);
-      const isCustom = !["mansion_murder", "ark_lockdown", "deep_sea_base"].includes(currentScenario?.id || '');
       const localResult = runLocalVerification(selectedEvidenceIds[0], selectedEvidenceIds[1], userExplanation, isCustom);
       console.log("[handleVerifyContradiction] Local verification success:", localResult);
       processVerificationResult(localResult, evidenceA, evidenceB, isCustom);
