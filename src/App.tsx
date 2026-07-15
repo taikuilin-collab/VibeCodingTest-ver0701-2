@@ -1196,6 +1196,13 @@ export default function App() {
               <img
                 src={titleImage}
                 alt="矛盾検知脱出ゲーム"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  const fallbackUrl = `${import.meta.env.BASE_URL}title.png`;
+                  if (target.src !== fallbackUrl) {
+                    target.src = fallbackUrl;
+                  }
+                }}
                 className="w-full max-w-lg md:max-w-xl lg:max-w-2xl max-h-[180px] sm:max-h-[240px] md:max-h-[300px] object-contain mx-auto transition-transform duration-700 hover:scale-105 filter drop-shadow-[0_10px_25px_rgba(245,158,11,0.18)] block"
               />
             </div>
