@@ -393,14 +393,6 @@ const EXTRA_EVIDENCE_LIBRARY: Record<string, Evidence> = {
   }
 };
 
-// Helper to resolve asset paths relative to the Vite BASE_URL.
-// This ensures assets are correctly located both in subdirectory deployments like GitHub Pages
-// (e.g. `${import.meta.env.BASE_URL}title.png`) and in local development environments.
-const resolveAssetPath = (path: string): string => {
-  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-  return `${import.meta.env.BASE_URL}${cleanPath}`;
-};
-
 // Single global/module-level Audio instance to guarantee there is absolutely no overlapping or duplicated BGM
 const getBgmAudio = (): HTMLAudioElement | null => {
   if (typeof window === 'undefined') return null;
@@ -420,7 +412,7 @@ const getBgmAudio = (): HTMLAudioElement | null => {
         win.__compiledBgmAudios = new Set();
       }
 
-      const audio = new Audio(resolveAssetPath('title.mp3'));
+      const audio = new Audio(`${import.meta.env.BASE_URL}title.mp3`);
       audio.loop = true;
       audio.volume = 0.4;
       win.__globalBgmAudio = audio;
@@ -438,7 +430,7 @@ const getStartSeAudio = (): HTMLAudioElement | null => {
   try {
     const win = window as any;
     if (!win.__globalStartSeAudio) {
-      const se = new Audio(resolveAssetPath('gamestart.mp3'));
+      const se = new Audio(`${import.meta.env.BASE_URL}gamestart.mp3`);
       se.loop = true;
       se.volume = 0.6;
       win.__globalStartSeAudio = se;
@@ -1062,7 +1054,7 @@ export default function App() {
           >
             {!headerImageError ? (
               <img
-                src={resolveAssetPath('title.png')}
+                src={`${import.meta.env.BASE_URL}title.png`}
                 referrerPolicy="no-referrer"
                 alt="矛盾検知脱出ゲーム"
                 onError={() => setHeaderImageError(true)}
@@ -1202,7 +1194,7 @@ export default function App() {
             {/* Hero Brand Title Area */}
             <div className="w-full flex items-center justify-center py-4">
               <img
-                src={resolveAssetPath('title.png')}
+                src={`${import.meta.env.BASE_URL}title.png`}
                 referrerPolicy="no-referrer"
                 alt="矛盾検知脱出ゲーム"
                 className="w-full max-w-lg md:max-w-xl lg:max-w-2xl max-h-[180px] sm:max-h-[240px] md:max-h-[300px] object-contain mx-auto transition-transform duration-700 hover:scale-105 filter drop-shadow-[0_10px_25px_rgba(245,158,11,0.18)] block"
