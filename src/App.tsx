@@ -1055,7 +1055,6 @@ export default function App() {
             {!headerImageError ? (
               <img
                 src={`${import.meta.env.BASE_URL}title.png`}
-                referrerPolicy="no-referrer"
                 alt="矛盾検知脱出ゲーム"
                 onError={() => setHeaderImageError(true)}
                 className="w-auto h-full object-contain mx-auto transition-all duration-300 block"
@@ -1195,7 +1194,6 @@ export default function App() {
             <div className="w-full flex items-center justify-center py-4">
               <img
                 src={`${import.meta.env.BASE_URL}title.png`}
-                referrerPolicy="no-referrer"
                 alt="矛盾検知脱出ゲーム"
                 className="w-full max-w-lg md:max-w-xl lg:max-w-2xl max-h-[180px] sm:max-h-[240px] md:max-h-[300px] object-contain mx-auto transition-transform duration-700 hover:scale-105 filter drop-shadow-[0_10px_25px_rgba(245,158,11,0.18)] block"
               />
