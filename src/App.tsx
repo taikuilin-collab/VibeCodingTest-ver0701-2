@@ -393,12 +393,12 @@ const EXTRA_EVIDENCE_LIBRARY: Record<string, Evidence> = {
   }
 };
 
-// Helper to resolve asset paths incorporating the optional subdirectory BASE_URL of Vite
+// Helper to resolve asset paths relative to the current document (index.html) location.
+// This ensures assets are correctly located both in subdirectory deployments like GitHub Pages
+// (e.g. https://<username>.github.io/<repo>/) and in local development environments.
 const resolveAssetPath = (path: string): string => {
-  const base = import.meta.env.BASE_URL || '/';
-  const cleanBase = base.endsWith('/') ? base : base + '/';
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-  return cleanBase + cleanPath;
+  return './' + cleanPath;
 };
 
 // Single global/module-level Audio instance to guarantee there is absolutely no overlapping or duplicated BGM
