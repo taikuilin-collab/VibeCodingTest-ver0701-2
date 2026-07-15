@@ -1200,41 +1200,13 @@ export default function App() {
         {showWelcomePortal && (
           <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-6 py-4 animate-fade-in">
             {/* Hero Brand Title Area */}
-            <div className="relative w-full max-w-4xl mx-auto flex flex-col items-center justify-center py-10 px-4 text-center overflow-hidden rounded-3xl border border-neutral-850/60 bg-neutral-950/40 shadow-[0_0_50px_rgba(245,158,11,0.05)] backdrop-blur-md">
-              {/* Backglow effects for mystery game aesthetics */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-amber-500/10 to-rose-500/10 rounded-full blur-3xl pointer-events-none animate-pulse"></div>
-              
-              {!mainImageError ? (
-                <div className="relative group w-full max-w-lg md:max-w-xl lg:max-w-2xl px-2">
-                  <img
-                    src={resolveAssetPath('title.png')}
-                    referrerPolicy="no-referrer"
-                    alt="矛盾検知脱出ゲーム"
-                    onError={() => setMainImageError(true)}
-                    className="w-full max-h-[180px] sm:max-h-[240px] md:max-h-[300px] object-contain mx-auto transition-transform duration-700 hover:scale-105 filter drop-shadow-[0_10px_25px_rgba(245,158,11,0.18)]"
-                  />
-                  {/* Subtle dynamic background glow */}
-                  <div className="absolute -inset-2 bg-gradient-to-r from-amber-500/0 via-amber-500/5 to-rose-500/0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
-                </div>
-              ) : (
-                /* Elegant aesthetic text fallback when image fails to load */
-                <div className="py-6 space-y-4 relative z-10 max-w-xl">
-                  <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 mb-2 shadow-inner shadow-amber-500/20">
-                    <ShieldAlert size={44} className="animate-pulse" />
-                  </div>
-                  <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-widest bg-gradient-to-r from-amber-400 via-rose-500 to-indigo-500 bg-clip-text text-transparent transform duration-500 hover:scale-105 filter drop-shadow-sm select-none">
-                    矛盾検知脱出ゲーム
-                  </h1>
-                  <p className="font-mono text-xs sm:text-sm tracking-[0.3em] text-neutral-400 uppercase">
-                    — Paradox Detection Escape —
-                  </p>
-                  <div className="h-1 w-28 bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-500 mx-auto rounded-full animate-pulse"></div>
-                </div>
-              )}
-              
-              <p className="text-xs md:text-sm text-neutral-400 font-mono tracking-widest mt-4 relative z-10 max-w-md mx-auto leading-relaxed border-t border-neutral-800/60 pt-3">
-                捜査能力と論理の力で、全ての偽りを暴き切れ。
-              </p>
+            <div className="w-full flex items-center justify-center py-4">
+              <img
+                src={resolveAssetPath('title.png')}
+                referrerPolicy="no-referrer"
+                alt="矛盾検知脱出ゲーム"
+                className="w-full max-w-lg md:max-w-xl lg:max-w-2xl max-h-[180px] sm:max-h-[240px] md:max-h-[300px] object-contain mx-auto transition-transform duration-700 hover:scale-105 filter drop-shadow-[0_10px_25px_rgba(245,158,11,0.18)] block"
+              />
             </div>
 
             {/* Header / Guide */}
