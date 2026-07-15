@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import titleLogo from './title.png';
-import titleBgm from './title.mp3';
-import gamestartSe from './gamestart.mp3';
 import { 
   AlertTriangle, 
   Key, 
@@ -423,7 +420,7 @@ const getBgmAudio = (): HTMLAudioElement | null => {
         win.__compiledBgmAudios = new Set();
       }
 
-      const audio = new Audio(titleBgm);
+      const audio = new Audio(resolveAssetPath('title.mp3'));
       audio.loop = true;
       audio.volume = 0.4;
       win.__globalBgmAudio = audio;
@@ -441,7 +438,7 @@ const getStartSeAudio = (): HTMLAudioElement | null => {
   try {
     const win = window as any;
     if (!win.__globalStartSeAudio) {
-      const se = new Audio(gamestartSe);
+      const se = new Audio(resolveAssetPath('gamestart.mp3'));
       se.loop = true;
       se.volume = 0.6;
       win.__globalStartSeAudio = se;
@@ -1065,7 +1062,7 @@ export default function App() {
           >
             {!headerImageError ? (
               <img
-                src={titleLogo}
+                src={resolveAssetPath('title.png')}
                 referrerPolicy="no-referrer"
                 alt="矛盾検知脱出ゲーム"
                 onError={() => setHeaderImageError(true)}
@@ -1210,7 +1207,7 @@ export default function App() {
               {!mainImageError ? (
                 <div className="relative group w-full max-w-lg md:max-w-xl lg:max-w-2xl px-2">
                   <img
-                    src={titleLogo}
+                    src={resolveAssetPath('title.png')}
                     referrerPolicy="no-referrer"
                     alt="矛盾検知脱出ゲーム"
                     onError={() => setMainImageError(true)}
