@@ -1,0 +1,9 @@
+# Treat image and audio assets explicitly as binary to prevent CRLF/LF line-ending corruption during Git checkout, commit, or deploy
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.mp3 binary
+*.wav binary
+*.ogg binary
