@@ -5,7 +5,7 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(({ command }) => {
   return {
-    base: process.env.GITHUB_ACTIONS ? '/VibeCodingTest-ver0701-2/' : '/',
+    base: process.env.GITHUB_ACTIONS ? './' : '/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
