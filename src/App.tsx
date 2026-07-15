@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import titleLogo from './title.png';
+import titleBgm from './title.mp3';
+import gamestartSe from './gamestart.mp3';
 import { 
   AlertTriangle, 
   Key, 
@@ -393,6 +396,14 @@ const EXTRA_EVIDENCE_LIBRARY: Record<string, Evidence> = {
   }
 };
 
+// Helper to resolve asset paths incorporating the optional subdirectory BASE_URL of Vite
+const resolveAssetPath = (path: string): string => {
+  const base = import.meta.env.BASE_URL || '/';
+  const cleanBase = base.endsWith('/') ? base : base + '/';
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  return cleanBase + cleanPath;
+};
+
 // Single global/module-level Audio instance to guarantee there is absolutely no overlapping or duplicated BGM
 const getBgmAudio = (): HTMLAudioElement | null => {
   if (typeof window === 'undefined') return null;
@@ -412,7 +423,7 @@ const getBgmAudio = (): HTMLAudioElement | null => {
         win.__compiledBgmAudios = new Set();
       }
 
-      const audio = new Audio('./title.mp3');
+      const audio = new Audio(titleBgm);
       audio.loop = true;
       audio.volume = 0.4;
       win.__globalBgmAudio = audio;
@@ -430,7 +441,7 @@ const getStartSeAudio = (): HTMLAudioElement | null => {
   try {
     const win = window as any;
     if (!win.__globalStartSeAudio) {
-      const se = new Audio('./gamestart.mp3');
+      const se = new Audio(gamestartSe);
       se.loop = true;
       se.volume = 0.6;
       win.__globalStartSeAudio = se;
@@ -446,6 +457,8 @@ const getStartSeAudio = (): HTMLAudioElement | null => {
 };
 
 export default function App() {
+  const [headerImageError, setHeaderImageError] = useState<boolean>(false);
+  const [mainImageError, setMainImageError] = useState<boolean>(false);
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
   const [currentScenario, setCurrentScenario] = useState<Scenario | null>(null);
   const [unlockedEvidences, setUnlockedEvidences] = useState<Evidence[]>([]);
@@ -1038,24 +1051,31 @@ export default function App() {
 
       {/* Brand Navigation Bar */}
       <nav className={`border-b border-neutral-800 bg-neutral-950/80 backdrop-blur-md shrink-0 z-40 px-4 transition-all duration-300 flex flex-col items-center justify-center ${
-        showWelcomePortal ? 'py-0 gap-1' : 'py-1.5 gap-1.5'
+        showWelcomePortal ? 'py-2 gap-1.5' : 'py-1.5 gap-1.5'
       }`}>
         <div className="flex flex-col items-center text-center gap-0">
           <h1 
             onClick={() => { if (!showWelcomePortal) handleGoToPortal(); }}
             className={`m-0 p-0 leading-none flex items-center justify-center transition-all duration-300 ${
               showWelcomePortal
-                ? 'h-48 sm:h-64 md:h-80 lg:h-96 w-full max-w-xl md:max-w-2xl lg:max-w-3xl px-4'
+                ? 'hidden' // Hide logo in navbar when welcome portal is open (it has its own big brand section now!)
                 : 'h-8 md:h-10 overflow-hidden cursor-pointer hover:opacity-80 active:scale-95'
             }`}
             title={!showWelcomePortal ? "事件選択ポータルに戻る" : undefined}
           >
-            <img
-              src="./title.png"
-              referrerPolicy="no-referrer"
-              alt="矛盾検知脱出ゲーム"
-              className="w-full h-full object-contain mx-auto transition-all duration-300 block"
-            />
+            {!headerImageError ? (
+              <img
+                src={titleLogo}
+                referrerPolicy="no-referrer"
+                alt="矛盾検知脱出ゲーム"
+                onError={() => setHeaderImageError(true)}
+                className="w-auto h-full object-contain mx-auto transition-all duration-300 block"
+              />
+            ) : (
+              <span className="text-sm md:text-base font-black tracking-widest bg-gradient-to-r from-amber-400 to-rose-500 bg-clip-text text-transparent">
+                🔍 矛盾検知脱出ゲーム
+              </span>
+            )}
           </h1>
         </div>
 
@@ -1182,6 +1202,44 @@ export default function App() {
         {/* Welcome Portal: Selected by User */}
         {showWelcomePortal && (
           <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-6 py-4 animate-fade-in">
+            {/* Hero Brand Title Area */}
+            <div className="relative w-full max-w-4xl mx-auto flex flex-col items-center justify-center py-10 px-4 text-center overflow-hidden rounded-3xl border border-neutral-850/60 bg-neutral-950/40 shadow-[0_0_50px_rgba(245,158,11,0.05)] backdrop-blur-md">
+              {/* Backglow effects for mystery game aesthetics */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-amber-500/10 to-rose-500/10 rounded-full blur-3xl pointer-events-none animate-pulse"></div>
+              
+              {!mainImageError ? (
+                <div className="relative group w-full max-w-lg md:max-w-xl lg:max-w-2xl px-2">
+                  <img
+                    src={titleLogo}
+                    referrerPolicy="no-referrer"
+                    alt="矛盾検知脱出ゲーム"
+                    onError={() => setMainImageError(true)}
+                    className="w-full max-h-[180px] sm:max-h-[240px] md:max-h-[300px] object-contain mx-auto transition-transform duration-700 hover:scale-105 filter drop-shadow-[0_10px_25px_rgba(245,158,11,0.18)]"
+                  />
+                  {/* Subtle dynamic background glow */}
+                  <div className="absolute -inset-2 bg-gradient-to-r from-amber-500/0 via-amber-500/5 to-rose-500/0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+                </div>
+              ) : (
+                /* Elegant aesthetic text fallback when image fails to load */
+                <div className="py-6 space-y-4 relative z-10 max-w-xl">
+                  <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 mb-2 shadow-inner shadow-amber-500/20">
+                    <ShieldAlert size={44} className="animate-pulse" />
+                  </div>
+                  <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-widest bg-gradient-to-r from-amber-400 via-rose-500 to-indigo-500 bg-clip-text text-transparent transform duration-500 hover:scale-105 filter drop-shadow-sm select-none">
+                    矛盾検知脱出ゲーム
+                  </h1>
+                  <p className="font-mono text-xs sm:text-sm tracking-[0.3em] text-neutral-400 uppercase">
+                    — Paradox Detection Escape —
+                  </p>
+                  <div className="h-1 w-28 bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-500 mx-auto rounded-full animate-pulse"></div>
+                </div>
+              )}
+              
+              <p className="text-xs md:text-sm text-neutral-400 font-mono tracking-widest mt-4 relative z-10 max-w-md mx-auto leading-relaxed border-t border-neutral-800/60 pt-3">
+                捜査能力と論理の力で、全ての偽りを暴き切れ。
+              </p>
+            </div>
+
             {/* Header / Guide */}
             <div className="bg-gradient-to-b from-neutral-900 via-neutral-900 to-neutral-950 border border-neutral-800 rounded-3xl p-6 md:p-8 relative overflow-hidden shadow-2xl">
               <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>

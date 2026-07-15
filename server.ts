@@ -23,6 +23,7 @@ if (!isProd) {
     server: { middlewareMode: true },
     appType: 'custom',
   });
+  app.use(express.static(path.resolve(root, 'public')));
   app.use(vite.middlewares);
 } else {
   app.use(express.static(path.resolve(root, 'dist')));
